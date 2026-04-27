@@ -4,25 +4,27 @@ using System;
 using System.Threading.Tasks;
 using Meadow;
 using Meadow.Devices;
+using Meadow.Foundation.Sensors.Atmospheric;
 using Meadow.Peripherals.Leds;
 
 namespace Projet_meadow;
 
 public class MeadowApp : App<F7FeatherV2>
 {
-    RgbPwmLed onboardLed;
+    private RgbPwmLed _onboardLed;
+    private Bmp280 bmp280;
 
     public override async Task Initialize()
     {
         Resolver.Log.Info("Initialize...");
 
-        onboardLed = new RgbPwmLed(
+        _onboardLed = new RgbPwmLed(
             redPwmPin: Device.Pins.OnboardLedRed,
             greenPwmPin: Device.Pins.OnboardLedGreen,
             bluePwmPin: Device.Pins.OnboardLedBlue,
             CommonType.CommonAnode);
 
-        onboardLed.StartPulse(Color.Red);
+        await _onboardLed.StartPulse(Color.Red);
 
         Resolver.Log.Info("Waiting wifi to be up");
 
@@ -33,7 +35,13 @@ public class MeadowApp : App<F7FeatherV2>
             await Task.Delay(500);
         }
 
-        onboardLed.SetColor(Color.Green);
+        _onboardLed.SetColor(Color.Green);
+        Resolver.Log.Info("Wifi is up!");
+
+        Resolver.Log.Info("Initializing I2C Bus");
+        var i2cBus = Device.CreateI2cBus();
+        Resolver.Log.Info("Initializing Bmp280 sensor");
+        bmp280 = new Bmp280(i2cBus);
 
         await base.Initialize();
     }
@@ -41,6 +49,21 @@ public class MeadowApp : App<F7FeatherV2>
     public override Task Run()
     {
         Resolver.Log.Info("Run...");
+        Resolver.Log.Info($"Current temperature: {GetTemperature(bmp280):0.00} °C");
+        Resolver.Log.Info($"Current pressure: {GetPressure(bmp280):0.00} hPa");
+        System.Threading.Thread.Sleep(1000);
         return Task.CompletedTask;
+    }
+    
+    private static double GetTemperature(Bmp280 bmp280)
+    {
+        var result = bmp280.Read();
+        return result.Result.Temperature.Value.Celsius;
+    }
+    
+    private static double GetPressure(Bmp280 bmp280)
+    {
+        var result = bmp280.Read();
+        return result.Result.Pressure.Value.Hectopascal;
     }
 }
