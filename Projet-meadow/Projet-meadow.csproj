@@ -7,8 +7,11 @@
         <LangVersion>10.0</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Meadow.F7" Version="2.*"/>
-        <PackageReference Include="Meadow.Foundation" Version="2.*"/>
+        <PackageReference Include="Meadow.F7" Version="2.*" />
+        <PackageReference Include="Meadow.Foundation" Version="2.*" />
+        <PackageReference Include="Meadow.Foundation.Sensors.Atmospheric.Bmx280" Version="2.5.0" />
+        <PackageReference Include="MQTTnet" Version="3.1.2" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     </ItemGroup>
     <ItemGroup>
         <None Include="meadow.config.yaml">

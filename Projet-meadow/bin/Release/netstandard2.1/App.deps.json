@@ -9,8 +9,11 @@
     ".NETStandard,Version=v2.1/": {
       "App/1.0.0": {
         "dependencies": {
+          "MQTTnet": "3.1.2",
           "Meadow.F7": "2.5.0",
-          "Meadow.Foundation": "2.5.0"
+          "Meadow.Foundation": "2.5.0",
+          "Meadow.Foundation.Sensors.Atmospheric.Bmx280": "2.5.0",
+          "Newtonsoft.Json": "13.0.4"
         },
         "runtime": {
           "App.dll": {}
@@ -21,7 +24,6 @@
           "Meadow.Contracts": "2.5.0",
           "Meadow.Foundation.Serialization.MicroJson": "2.5.0",
           "Meadow.Logging": "2.5.0",
-          "Meadow.MQTT": "2.5.0",
           "NetEscapades.Configuration.Yaml": "3.1.0",
           "System.IO.Hashing": "9.0.0",
           "System.IO.Ports": "8.0.0",
@@ -71,6 +73,17 @@
           }
         }
       },
+      "Meadow.Foundation.Sensors.Atmospheric.Bmx280/2.5.0": {
+        "dependencies": {
+          "Meadow.Foundation": "2.5.0"
+        },
+        "runtime": {
+          "lib/netstandard2.1/Bmx280.dll": {
+            "assemblyVersion": "2.5.0.0",
+            "fileVersion": "2.5.0.0"
+          }
+        }
+      },
       "Meadow.Foundation.Serialization.MicroJson/2.5.0": {
         "runtime": {
           "lib/netstandard2.1/MicroJson.dll": {
@@ -82,14 +95,6 @@
       "Meadow.Logging/2.5.0": {
         "runtime": {
           "lib/netstandard2.1/Meadow.Logging.dll": {
-            "assemblyVersion": "2.5.0.0",
-            "fileVersion": "2.5.0.0"
-          }
-        }
-      },
-      "Meadow.MQTT/2.5.0": {
-        "runtime": {
-          "lib/netstandard2.0/MQTTnet.dll": {
             "assemblyVersion": "2.5.0.0",
             "fileVersion": "2.5.0.0"
           }
@@ -179,6 +184,14 @@
           }
         }
       },
+      "MQTTnet/3.1.2": {
+        "runtime": {
+          "lib/netstandard2.1/MQTTnet.dll": {
+            "assemblyVersion": "3.1.2.0",
+            "fileVersion": "3.1.2.0"
+          }
+        }
+      },
       "NetEscapades.Configuration.Yaml/3.1.0": {
         "dependencies": {
           "Microsoft.Extensions.Configuration": "2.0.0",
@@ -189,6 +202,14 @@
           "lib/netstandard2.0/NetEscapades.Configuration.Yaml.dll": {
             "assemblyVersion": "3.1.0.0",
             "fileVersion": "3.1.0.0"
+          }
+        }
+      },
+      "Newtonsoft.Json/13.0.4": {
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "assemblyVersion": "13.0.0.0",
+            "fileVersion": "13.0.4.30916"
           }
         }
       },
@@ -318,6 +339,13 @@
       "path": "meadow.foundation/2.5.0",
       "hashPath": "meadow.foundation.2.5.0.nupkg.sha512"
     },
+    "Meadow.Foundation.Sensors.Atmospheric.Bmx280/2.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RcX+mGHDUl0hPCUOa66pdXiAZP68NdwOubHRahxZaDR6y8JUVf8BQTwFOF7EGFhzNnRDKPdr5q0eqSAsdddlSQ==",
+      "path": "meadow.foundation.sensors.atmospheric.bmx280/2.5.0",
+      "hashPath": "meadow.foundation.sensors.atmospheric.bmx280.2.5.0.nupkg.sha512"
+    },
     "Meadow.Foundation.Serialization.MicroJson/2.5.0": {
       "type": "package",
       "serviceable": true,
@@ -331,13 +359,6 @@
       "sha512": "sha512-c/7QXEGvWtcwWQ2t87KjoKzxL5u7OexrlP8sgLuz2QF3UhLtTXZeZyuxci8eqe2IsnWE6dzfsxG166vlAf97eQ==",
       "path": "meadow.logging/2.5.0",
       "hashPath": "meadow.logging.2.5.0.nupkg.sha512"
-    },
-    "Meadow.MQTT/2.5.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-WNk1FUpdWrl3RrRtjK293BPbOEr0H28nu1diaWGzM7gZ35vAK4zdKkScY7QOuCxkwPKKotpBjNBjRJK62tlKXQ==",
-      "path": "meadow.mqtt/2.5.0",
-      "hashPath": "meadow.mqtt.2.5.0.nupkg.sha512"
     },
     "Meadow.Units/2.5.0": {
       "type": "package",
@@ -395,12 +416,26 @@
       "path": "microsoft.extensions.primitives/2.0.0",
       "hashPath": "microsoft.extensions.primitives.2.0.0.nupkg.sha512"
     },
+    "MQTTnet/3.1.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-074AmNXQSs6S3vKyWqYIVvVCeyydCYhOLqfTfRXTaOihQTLAeKRnZh8c3Xhsvct4Rn+tCORFpUdLE35lH4c5Aw==",
+      "path": "mqttnet/3.1.2",
+      "hashPath": "mqttnet.3.1.2.nupkg.sha512"
+    },
     "NetEscapades.Configuration.Yaml/3.1.0": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-D5Pxt4hXABna5OwYQmAQukspW7LEoYgvfAqyw85gUF/gnH9pWHsZCLMXy2ewWoQ0PELZ1lOGFLDbDVeoCvtBgA==",
       "path": "netescapades.configuration.yaml/3.1.0",
       "hashPath": "netescapades.configuration.yaml.3.1.0.nupkg.sha512"
+    },
+    "Newtonsoft.Json/13.0.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-pdgNNMai3zv51W5aq268sujXUyx7SNdE2bj1wZcWjAQrKMFZV260lbqYop1d2GM67JI1huLRwxo9ZqnfF/lC6A==",
+      "path": "newtonsoft.json/13.0.4",
+      "hashPath": "newtonsoft.json.13.0.4.nupkg.sha512"
     },
     "runtime.linux-arm.runtime.native.System.IO.Ports/8.0.0": {
       "type": "package",
