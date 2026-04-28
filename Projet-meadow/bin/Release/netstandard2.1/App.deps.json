@@ -9,10 +9,11 @@
     ".NETStandard,Version=v2.1/": {
       "App/1.0.0": {
         "dependencies": {
-          "MQTTnet": "3.1.2",
+          "Meadow.AmqpNetLite": "1.7.0",
           "Meadow.F7": "2.5.0",
           "Meadow.Foundation": "2.5.0",
           "Meadow.Foundation.Sensors.Atmospheric.Bmx280": "2.5.0",
+          "Meadow.Logging.LogProviders": "2.5.0",
           "Newtonsoft.Json": "13.0.4"
         },
         "runtime": {
@@ -24,6 +25,7 @@
           "Meadow.Contracts": "2.5.0",
           "Meadow.Foundation.Serialization.MicroJson": "2.5.0",
           "Meadow.Logging": "2.5.0",
+          "Meadow.MQTT": "2.5.0",
           "NetEscapades.Configuration.Yaml": "3.1.0",
           "System.IO.Hashing": "9.0.0",
           "System.IO.Ports": "8.0.0",
@@ -33,6 +35,14 @@
           "lib/netstandard2.1/Meadow.dll": {
             "assemblyVersion": "2.5.0.0",
             "fileVersion": "2.5.0.0"
+          }
+        }
+      },
+      "Meadow.AmqpNetLite/1.7.0": {
+        "runtime": {
+          "lib/netstandard2.0/AmqpNetLite.dll": {
+            "assemblyVersion": "2.1.0.0",
+            "fileVersion": "2.4.5.0"
           }
         }
       },
@@ -95,6 +105,26 @@
       "Meadow.Logging/2.5.0": {
         "runtime": {
           "lib/netstandard2.1/Meadow.Logging.dll": {
+            "assemblyVersion": "2.5.0.0",
+            "fileVersion": "2.5.0.0"
+          }
+        }
+      },
+      "Meadow.Logging.LogProviders/2.5.0": {
+        "dependencies": {
+          "Meadow.Contracts": "2.5.0",
+          "Meadow.Logging": "2.5.0"
+        },
+        "runtime": {
+          "lib/netstandard2.1/Meadow.LogProviders.dll": {
+            "assemblyVersion": "2.5.0.0",
+            "fileVersion": "2.5.0.0"
+          }
+        }
+      },
+      "Meadow.MQTT/2.5.0": {
+        "runtime": {
+          "lib/netstandard2.0/MQTTnet.dll": {
             "assemblyVersion": "2.5.0.0",
             "fileVersion": "2.5.0.0"
           }
@@ -181,14 +211,6 @@
           "lib/netstandard2.0/Microsoft.Extensions.Primitives.dll": {
             "assemblyVersion": "2.0.0.0",
             "fileVersion": "2.0.0.17205"
-          }
-        }
-      },
-      "MQTTnet/3.1.2": {
-        "runtime": {
-          "lib/netstandard2.1/MQTTnet.dll": {
-            "assemblyVersion": "3.1.2.0",
-            "fileVersion": "3.1.2.0"
           }
         }
       },
@@ -318,6 +340,13 @@
       "path": "meadow/2.5.0",
       "hashPath": "meadow.2.5.0.nupkg.sha512"
     },
+    "Meadow.AmqpNetLite/1.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-BWCFxEaxzLrYvSHgwf16t+Y+UD3jXAKuPUU91rUogCVvw7ASp2LOQPEa5UYrNzpXfbokqFHCDqPKmnlOZB0DcA==",
+      "path": "meadow.amqpnetlite/1.7.0",
+      "hashPath": "meadow.amqpnetlite.1.7.0.nupkg.sha512"
+    },
     "Meadow.Contracts/2.5.0": {
       "type": "package",
       "serviceable": true,
@@ -359,6 +388,20 @@
       "sha512": "sha512-c/7QXEGvWtcwWQ2t87KjoKzxL5u7OexrlP8sgLuz2QF3UhLtTXZeZyuxci8eqe2IsnWE6dzfsxG166vlAf97eQ==",
       "path": "meadow.logging/2.5.0",
       "hashPath": "meadow.logging.2.5.0.nupkg.sha512"
+    },
+    "Meadow.Logging.LogProviders/2.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-72rOTF75PClGxbQhW6/2i8+0Fn28rZTpWNSuI5uAqUbg9fqXWqm/vKNERRHfN3TUHx5KwwMF+4tKivl+2nDP6g==",
+      "path": "meadow.logging.logproviders/2.5.0",
+      "hashPath": "meadow.logging.logproviders.2.5.0.nupkg.sha512"
+    },
+    "Meadow.MQTT/2.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-WNk1FUpdWrl3RrRtjK293BPbOEr0H28nu1diaWGzM7gZ35vAK4zdKkScY7QOuCxkwPKKotpBjNBjRJK62tlKXQ==",
+      "path": "meadow.mqtt/2.5.0",
+      "hashPath": "meadow.mqtt.2.5.0.nupkg.sha512"
     },
     "Meadow.Units/2.5.0": {
       "type": "package",
@@ -415,13 +458,6 @@
       "sha512": "sha512-ukg53qNlqTrK38WA30b5qhw0GD7y3jdI9PHHASjdKyTcBHTevFM2o23tyk3pWCgAV27Bbkm+CPQ2zUe1ZOuYSA==",
       "path": "microsoft.extensions.primitives/2.0.0",
       "hashPath": "microsoft.extensions.primitives.2.0.0.nupkg.sha512"
-    },
-    "MQTTnet/3.1.2": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-074AmNXQSs6S3vKyWqYIVvVCeyydCYhOLqfTfRXTaOihQTLAeKRnZh8c3Xhsvct4Rn+tCORFpUdLE35lH4c5Aw==",
-      "path": "mqttnet/3.1.2",
-      "hashPath": "mqttnet.3.1.2.nupkg.sha512"
     },
     "NetEscapades.Configuration.Yaml/3.1.0": {
       "type": "package",

@@ -5,12 +5,15 @@ C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\App.de
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\App.dll
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\App.pdb
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\Meadow.dll
+C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\AmqpNetLite.dll
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\Meadow.Contracts.dll
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\Meadow.F7.dll
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\Meadow.Foundation.dll
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\Bmx280.dll
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\MicroJson.dll
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\Meadow.Logging.dll
+C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\Meadow.LogProviders.dll
+C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\MQTTnet.dll
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\Meadow.Units.dll
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\Microsoft.Extensions.Configuration.dll
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\Microsoft.Extensions.Configuration.Abstractions.dll
@@ -19,7 +22,6 @@ C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\Micros
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\Microsoft.Extensions.FileProviders.Physical.dll
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\Microsoft.Extensions.FileSystemGlobbing.dll
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\Microsoft.Extensions.Primitives.dll
-C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\MQTTnet.dll
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\NetEscapades.Configuration.Yaml.dll
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\Newtonsoft.Json.dll
 C:\Users\rezpo\dev\Projet-meadow\Projet-meadow\bin\Release\netstandard2.1\SQLite-net.dll

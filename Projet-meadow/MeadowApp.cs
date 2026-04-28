@@ -1,17 +1,16 @@
-﻿using Meadow.Hardware;
-using Meadow.Foundation.Leds;
-using System;
-using System.Security.Authentication;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Amqp;
+using Amqp.Framing;
 using Meadow;
 using Meadow.Devices;
+using Meadow.Foundation.Leds;
 using Meadow.Foundation.Sensors.Atmospheric;
+using Meadow.Hardware;
 using Meadow.Peripherals.Leds;
-using MQTTnet;
-using MQTTnet.Client;
-using MQTTnet.Client.Options;
-using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using Meadow.Logging;
 
 namespace Projet_meadow;
 
@@ -19,14 +18,16 @@ public class MeadowApp : App<F7FeatherV2>
 {
     private RgbPwmLed _onboardLed;
     private Bmp280 bmp280;
-    private IMqttClient mqttClient;
+    private CloudLogger cloudLogger;
 
-    const string iotHubHostName = "meadow-iot-hub.azure-devices.net";
-    const string deviceId = "meadow-device";
-    
-    const string sasToken =
-        "SharedAccessSignature sr=meadow-iot-hub.azure-devices.net%2Fdevices%2Fmeadow-device&sig=vDevnardEhgQNAzilq801IOmGtf8mS4XKUeEYfj9DS0%3D&se=1777286954";
+    private Connection connection;
+    private SenderLink sender;
 
+    private const string HubName = "meadow-iot-hub";
+    private const string DeviceId = "meadow-device";
+
+    private const string SasToken =
+        "SharedAccessSignature sr=meadow-iot-hub.azure-devices.net%2Fdevices%2Fmeadow-device&sig=E6nxQ5wc5bDtMrw5wbmchEx8AZlWslNv6iLOebZJJdE%3D&se=1777389461";
     public override async Task Initialize()
     {
         Resolver.Log.Info("Initialize...");
@@ -38,46 +39,27 @@ public class MeadowApp : App<F7FeatherV2>
             CommonType.CommonAnode);
 
         await _onboardLed.StartPulse(Color.Red);
+        
+        Resolver.Log.Info("Initializing Meadow.Cloud logger...");
+        cloudLogger = new CloudLogger();
 
-        Resolver.Log.Info("Waiting wifi to be up");
+        Resolver.Log.AddProvider(cloudLogger);
+        Resolver.Services.Add(cloudLogger);
 
-        var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
-
-        while (!wifi.IsConnected)
-        {
-            await Task.Delay(500);
-        }
+        await WaitForWifiReady();
 
         _onboardLed.SetColor(Color.Green);
-        Resolver.Log.Info("Wifi is up!");
+        Resolver.Log.Info("WiFi is ready!");
 
-        Resolver.Log.Info("Initializing I2C Bus");
+        Resolver.Log.Info("Initializing I2C Bus...");
         var i2cBus = Device.CreateI2cBus();
-        Resolver.Log.Info("Initializing Bmp280 sensor");
+
+        Resolver.Log.Info("Initializing BMP280 sensor...");
         bmp280 = new Bmp280(i2cBus);
 
-        Resolver.Log.Info("Initializing MQTT client for Azure IoT Hub");
-
-        var factory = new MqttFactory();
-        mqttClient = factory.CreateMqttClient();
-
-        var username = $"{iotHubHostName}/{deviceId}/?api-version=2021-04-12";
-
-        var options = new MqttClientOptionsBuilder()
-            .WithClientId(deviceId)
-            .WithTcpServer(iotHubHostName, 8883)
-            .WithCredentials(username, sasToken)
-            .WithProtocolVersion(MQTTnet.Formatter.MqttProtocolVersion.V311)
-            .WithTls(new MqttClientOptionsBuilderTlsParameters
-            {
-                UseTls = true,
-                SslProtocol = SslProtocols.Tls12
-            })
-            .Build();
-
-        Resolver.Log.Info("Connecting to Azure IoT Hub via MQTT...");
-        await mqttClient.ConnectAsync(options);
-        Resolver.Log.Info("Connected to Azure IoT Hub.");
+        Resolver.Log.Info("Initializing Azure IoT Hub AMQP...");
+        await InitializeAzureAmqp();
+        Resolver.Log.Info("Initialize completed.");
 
         await base.Initialize();
     }
@@ -90,51 +72,165 @@ public class MeadowApp : App<F7FeatherV2>
 
         while (true)
         {
-            var result = await bmp280.Read();
-            double temp = result.Temperature.Value.Celsius;
-            double pressure = result.Pressure.Value.Hectopascal;
+            try
+            {
+                var result = await bmp280.Read();
 
-            Resolver.Log.Info($"Current temperature: {temp:0.00} °C");
-            Resolver.Log.Info($"Current pressure: {pressure:0.00} hPa");
+                double temperature = result.Temperature.Value.Celsius;
+                double pressure = result.Pressure.Value.Hectopascal;
 
-            await SendDataToAzure(temp, pressure, messageId++);
+                Resolver.Log.Info($"Current temperature: {temperature:0.00} °C");
+                Resolver.Log.Info($"Current pressure: {pressure:0.00} hPa");
 
-            await Task.Delay(TimeSpan.FromSeconds(30));
+                await SendDataToAzureAmqp(temperature, pressure, messageId++);
+                
+                SendDataToMeadowCloud(temperature, pressure, messageId++);
+
+                await Task.Delay(TimeSpan.FromSeconds(30));
+            }
+            catch (Exception ex)
+            {
+                Resolver.Log.Error($"Error in Run loop: {ex.GetType().FullName}");
+                Resolver.Log.Error(ex.Message);
+
+                await Task.Delay(TimeSpan.FromSeconds(10));
+            }
         }
     }
 
-    private async Task<bool> SendDataToAzure(double temperature, double pressure, int messageId)
+    private async Task WaitForWifiReady()
+    {
+        Resolver.Log.Info("Waiting WiFi to be ready...");
+
+        var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
+
+        int retry = 0;
+
+        while (!wifi.IsConnected)
+        {
+            Resolver.Log.Info($"WiFi not connected yet... retry {retry++}");
+            await Task.Delay(1000);
+        }
+
+        Resolver.Log.Info("WiFi connected.");
+        Resolver.Log.Info($"IP Address: {wifi.IpAddress}");
+
+        Resolver.Log.Info("Waiting for network stack to be ready...");
+        await Task.Delay(30000);
+    }
+
+    private async Task InitializeAzureAmqp()
     {
         try
         {
-            var telemetryDataPoint = new
-            {
-                messageId,
-                deviceId,
-                temperature,
-                pressure,
-                timestamp = DateTime.UtcNow
-            };
+            string hostName = HubName + ".azure-devices.net";
+            string userName = DeviceId + "@sas." + HubName;
+            string senderAddress = "devices/" + DeviceId + "/messages/events";
 
-            string messageString = JsonConvert.SerializeObject(telemetryDataPoint);
+            Resolver.Log.Info("Create AMQP connection factory...");
+            var factory = new ConnectionFactory();
 
-            var topic = $"devices/{deviceId}/messages/events/temperature-warning={(temperature > 30 ? "true" : "false")}";
+            Resolver.Log.Info("Create AMQP connection...");
+            connection = await factory.CreateAsync(
+                new Address(hostName, 5671, userName, SasToken)
+            );
 
-            var message = new MqttApplicationMessageBuilder()
-                .WithTopic(topic)
-                .WithPayload(messageString)
-                .Build();
+            Resolver.Log.Info("Create AMQP session...");
+            var session = new Session(connection);
 
-            Resolver.Log.Info($"Sending message {messageId} to Azure...");
-            await mqttClient.PublishAsync(message);
+            Resolver.Log.Info("Create AMQP SenderLink...");
+            sender = new SenderLink(session, "send-link", senderAddress);
 
-            Resolver.Log.Info("Data sent successfully.");
-            return true;
+            Resolver.Log.Info("Azure IoT Hub AMQP initialized.");
         }
         catch (Exception ex)
         {
-            Resolver.Log.Error($"Error sending data to Azure: {ex.Message}");
-            return false;
+            Resolver.Log.Error($"AMQP initialization failed: {ex.GetType().FullName}");
+            Resolver.Log.Error(ex.Message);
+
+            _onboardLed?.SetColor(Color.Red);
         }
+    }
+
+    private async Task SendDataToAzureAmqp(double temperature, double pressure, int messageId)
+    {
+        if (sender == null)
+        {
+            Resolver.Log.Error("AMQP sender is null. Message not sent.");
+            return;
+        }
+
+        try
+        {
+            string messagePayload =
+                "{"
+                + $"\"messageId\":{messageId},"
+                + $"\"deviceId\":\"{DeviceId}\","
+                + $"\"temperature\":{temperature},"
+                + $"\"pressure\":{pressure},"
+                + $"\"timestamp\":\"{DateTime.UtcNow:O}\""
+                + "}";
+
+            Resolver.Log.Info("Create AMQP message payload");
+            Resolver.Log.Info(messagePayload);
+
+            byte[] payloadBytes = Encoding.UTF8.GetBytes(messagePayload);
+
+            var message = new Message
+            {
+                BodySection = new Data
+                {
+                    Binary = payloadBytes
+                }
+            };
+
+            message.ApplicationProperties = new ApplicationProperties();
+            message.ApplicationProperties["temperature-warning"] =
+                temperature > 30 ? "true" : "false";
+
+            Resolver.Log.Info($"Sending AMQP message {messageId}...");
+            await sender.SendAsync(message);
+
+            Resolver.Log.Info(
+                $"*** AMQP - DATA SENT - Temperature: {temperature:0.00} °C, Pressure: {pressure:0.00} hPa ***"
+            );
+        }
+        catch (Exception ex)
+        {
+            Resolver.Log.Error($"AMQP send failed: {ex.GetType().FullName}");
+            Resolver.Log.Error(ex.Message);
+        }
+    }
+    
+    private void SendDataToMeadowCloud(double temperature, double pressure, int messageId)
+    {
+        var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
+        if (cloudLogger == null)
+        {
+            Resolver.Log.Error("CloudLogger is null. Data not sent.");
+            return;
+        }
+
+        if (wifi == null || !wifi.IsConnected)
+        {
+            Resolver.Log.Error("WiFi is not connected. Data not sent to Meadow.Cloud.");
+            return;
+        }
+
+        Resolver.Log.Info($"Sending event {messageId} to Meadow.Cloud...");
+
+        cloudLogger.LogEvent(
+            eventId: 1000,
+            description: "bmp280 reading",
+            measurements: new Dictionary<string, object>
+            {
+                { "messageId", messageId.ToString() },
+                { "temperature", temperature.ToString("N2") },
+                { "pressure", pressure.ToString("N2") },
+                { "timestamp", DateTime.UtcNow.ToString("O") }
+            }
+        );
+
+        Resolver.Log.Info("Data sent to Meadow.Cloud.");
     }
 }

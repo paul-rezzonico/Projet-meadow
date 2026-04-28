@@ -36,9 +36,9 @@ Network:
         #          Gateway: 192.168.1.254
         - Name: WiFi
           UseDHCP: true
-    #          IPAddress:
-    #          NetMask:
-    #          Gateway:
+          IPAddress:
+          NetMask:
+          Gateway:
 
     # Default Interface
     DefaultInterface: Wifi

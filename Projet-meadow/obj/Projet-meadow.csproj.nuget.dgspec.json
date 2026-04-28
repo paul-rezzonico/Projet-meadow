@@ -46,9 +46,9 @@
         "netstandard2.1": {
           "targetAlias": "netstandard2.1",
           "dependencies": {
-            "MQTTnet": {
+            "Meadow.AmqpNetLite": {
               "target": "Package",
-              "version": "[3.1.2, )"
+              "version": "[1.7.0, )"
             },
             "Meadow.F7": {
               "target": "Package",
@@ -61,6 +61,10 @@
             "Meadow.Foundation.Sensors.Atmospheric.Bmx280": {
               "target": "Package",
               "version": "[2.5.0, )"
+            },
+            "Meadow.Logging.LogProviders": {
+              "target": "Package",
+              "version": "[2.*, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
