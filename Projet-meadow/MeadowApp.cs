@@ -27,7 +27,7 @@ public class MeadowApp : App<F7FeatherV2>
     private const string DeviceId = "meadow-device";
 
     private const string SasToken =
-        "SharedAccessSignature sr=meadow-iot-hub.azure-devices.net%2Fdevices%2Fmeadow-device&sig=E6nxQ5wc5bDtMrw5wbmchEx8AZlWslNv6iLOebZJJdE%3D&se=1777389461";
+        "SharedAccessSignature sr=meadow-iot-hub.azure-devices.net%2Fdevices%2Fmeadow-device&sig=lG%2F5OeT11DHMipIfZ1TbyP9AvjHXkomLUzenRfoxa6k%3D&se=1777478345";
     public override async Task Initialize()
     {
         Resolver.Log.Info("Initialize...");
