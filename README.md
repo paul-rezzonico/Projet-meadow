@@ -23,10 +23,18 @@ To use Meadow.Cloud features, you must register your device using the Meadow CLI
 meadow device provision
 ```
 
-### 3. Azure IoT Hub Key (SAS Token)
-You need to generate a Shared Access Signature (SAS) token for your device to authenticate with Azure IoT Hub.
-- Generate the token using the Azure CLI or Azure IoT Explorer.
-- Update the `SasToken` constant in `Projet-meadow/MeadowApp.cs`:
+### 3. Azure IoT Hub Configuration
+You need to configure your Azure IoT Hub settings in `Projet-meadow/MeadowApp.cs`.
+
+- **Hub Name and Device ID:** Update these constants with your Azure IoT Hub name (the part before `.azure-devices.net`) and your registered device ID:
+```csharp
+private const string HubName = "YOUR_IOT_HUB_NAME";
+private const string DeviceId = "YOUR_DEVICE_ID";
+```
+
+- **SAS Token:** You need to generate a Shared Access Signature (SAS) token for your device to authenticate.
+    - Generate the token using the Azure CLI or Azure IoT Explorer.
+    - Update the `SasToken` constant:
 ```csharp
 private const string SasToken = "SharedAccessSignature sr=...";
 ```
