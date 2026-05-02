@@ -23,11 +23,11 @@ public class MeadowApp : App<F7FeatherV2>
     private Connection connection;
     private SenderLink sender;
 
-    private const string HubName = "meadow-iot-hub";
-    private const string DeviceId = "meadow-device";
+    private const string HubName = "YOUR_IOT_HUB_NAME";
+    private const string DeviceId = "YOUR_DEVICE_ID";
 
     private const string SasToken =
-        "SharedAccessSignature sr=meadow-iot-hub.azure-devices.net%2Fdevices%2Fmeadow-device&sig=lG%2F5OeT11DHMipIfZ1TbyP9AvjHXkomLUzenRfoxa6k%3D&se=1777478345";
+        "YOUR_SAS_TOKEN";
     public override async Task Initialize()
     {
         Resolver.Log.Info("Initialize...");
@@ -38,11 +38,13 @@ public class MeadowApp : App<F7FeatherV2>
             bluePwmPin: Device.Pins.OnboardLedBlue,
             CommonType.CommonAnode);
 
+        // turn on the onboard LED while initializing
         await _onboardLed.StartPulse(Color.Red);
         
         Resolver.Log.Info("Initializing Meadow.Cloud logger...");
         cloudLogger = new CloudLogger();
 
+        // Add the CloudLogger to the Resolver's Log and Services.'
         Resolver.Log.AddProvider(cloudLogger);
         Resolver.Services.Add(cloudLogger);
 
@@ -74,6 +76,7 @@ public class MeadowApp : App<F7FeatherV2>
         {
             try
             {
+                // read the sensor
                 var result = await bmp280.Read();
 
                 double temperature = result.Temperature.Value.Celsius;
@@ -82,8 +85,10 @@ public class MeadowApp : App<F7FeatherV2>
                 Resolver.Log.Info($"Current temperature: {temperature:0.00} °C");
                 Resolver.Log.Info($"Current pressure: {pressure:0.00} hPa");
 
+                // send the data to Azure IoT Hub
                 await SendDataToAzureAmqp(temperature, pressure, messageId++);
                 
+                // send the data to Meadow.Cloud
                 SendDataToMeadowCloud(temperature, pressure, messageId++);
 
                 await Task.Delay(TimeSpan.FromSeconds(30));
@@ -106,6 +111,7 @@ public class MeadowApp : App<F7FeatherV2>
 
         int retry = 0;
 
+        // Wait for WiFi to be ready.
         while (!wifi.IsConnected)
         {
             Resolver.Log.Info($"WiFi not connected yet... retry {retry++}");
@@ -115,6 +121,7 @@ public class MeadowApp : App<F7FeatherV2>
         Resolver.Log.Info("WiFi connected.");
         Resolver.Log.Info($"IP Address: {wifi.IpAddress}");
 
+        // Wait additional time for the network stack to be fully ready before attempting to connect to Azure IoT Hub.
         Resolver.Log.Info("Waiting for network stack to be ready...");
         await Task.Delay(30000);
     }

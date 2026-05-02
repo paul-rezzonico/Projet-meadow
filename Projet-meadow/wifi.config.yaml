@@ -7,9 +7,7 @@ Credentials:
   
   
   # WiFi SSID 
-#  Ssid: "Jeffrey Kirk"
-  Ssid: TP-Link_F99E
+  Ssid: "YOUR_WIFI_SSID"
   
   # WiFi Password
-#  Password: "cuteKIMchi"
-  Password: 05186150
+  Password: "YOUR_WIFI_PASSWORD"
